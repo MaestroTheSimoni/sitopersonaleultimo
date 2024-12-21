@@ -47,6 +47,135 @@ const SocialMediaNav = () => {
   );
 };
 
+const ContactForm = ({ isLoaded }) => {
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: 'riccardo.de.simoni01@gmail.com',
+    message: ''
+  });
+  const [submitStatus, setSubmitStatus] = React.useState({
+    isSubmitting: false,
+    success: false,
+    error: false
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitStatus({ isSubmitting: true, success: false, error: false });
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: "8f3c7305-95e9-4754-9b2f-5fa28af39ea2", // Web3Forms access key
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          subject: 'New Contact Form Submission'
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus({ isSubmitting: false, success: true, error: false });
+        // Reset form after successful submission
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setSubmitStatus({ isSubmitting: false, success: false, error: true });
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      setSubmitStatus({ isSubmitting: false, success: false, error: true });
+    }
+  };
+
+  return (
+      <div className={`
+        opacity-0 translate-y-10 transition-all duration-1000 delay-400
+        ${isLoaded ? 'opacity-100 translate-y-0' : ''}
+      `}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            <input 
+              type="text" 
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your Name" 
+              required
+              className="
+                w-full p-3 bg-gray-800 border border-gray-700 rounded-lg 
+                text-white placeholder-gray-400 focus:outline-none 
+                focus:ring-2 focus:ring-gray-600 transition-all duration-300
+              "
+            />
+            <input 
+              type="email" 
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Your Email" 
+              required
+              className="
+                w-full p-3 bg-gray-800 border border-gray-700 rounded-lg 
+                text-white placeholder-gray-400 focus:outline-none 
+                focus:ring-2 focus:ring-gray-600 transition-all duration-300
+              "
+            />
+          </div>
+          <textarea 
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            placeholder="Your Message" 
+            required
+            className="
+              w-full p-3 bg-gray-800 border border-gray-700 rounded-lg 
+              text-white placeholder-gray-400 focus:outline-none 
+              focus:ring-2 focus:ring-gray-600 h-40 transition-all duration-300
+            "
+          />
+          {submitStatus.success && (
+            <div className="text-green-500 text-center">
+              Message sent successfully! I'll get back to you soon.
+            </div>
+          )}
+          {submitStatus.error && (
+            <div className="text-red-500 text-center">
+              Oops! There was an error sending your message. Please try again.
+            </div>
+          )}
+          <button 
+            type="submit"
+            disabled={submitStatus.isSubmitting}
+            className={`
+              w-full text-white py-4 rounded-lg transition-all duration-300 
+              flex items-center justify-center gap-2
+              ${submitStatus.isSubmitting 
+                ? 'bg-gray-600 cursor-not-allowed' 
+                : 'bg-gray-700 hover:bg-gray-600'}
+            `}
+          >
+            {submitStatus.isSubmitting ? 'Sending...' : 'Send Message'}
+          </button>
+        </form>
+      </div>
+  );
+}
+
 export const sections = {
   home: {
     title: 'Hi, I\'m Riccardo De Simoni',
@@ -178,136 +307,11 @@ export const sections = {
   },
   contact: {
     title: 'Get in Touch',
-    renderFunction: (isLoaded) => {
-      const [formData, setFormData] = React.useState({
-        name: '',
-        email: 'riccardo.de.simoni01@gmail.com',
-        message: ''
-      });
-      const [submitStatus, setSubmitStatus] = React.useState({
-        isSubmitting: false,
-        success: false,
-        error: false
-      });
-
-      const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-          ...prev,
-          [name]: value
-        }));
-      };
-
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        setSubmitStatus({ isSubmitting: true, success: false, error: false });
-
-        try {
-          const response = await fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-              access_key: "8f3c7305-95e9-4754-9b2f-5fa28af39ea2", // Web3Forms access key
-              name: formData.name,
-              email: formData.email,
-              message: formData.message,
-              subject: 'New Contact Form Submission'
-            })
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            setSubmitStatus({ isSubmitting: false, success: true, error: false });
-            // Reset form after successful submission
-            setFormData({ name: '', email: '', message: '' });
-          } else {
-            setSubmitStatus({ isSubmitting: false, success: false, error: true });
-          }
-        } catch (error) {
-          console.error('Submission error:', error);
-          setSubmitStatus({ isSubmitting: false, success: false, error: true });
-        }
-      };
-
-      return (
-        <>
-          <SocialMediaNav />
-          <div className={`
-            opacity-0 translate-y-10 transition-all duration-1000 delay-400
-            ${isLoaded ? 'opacity-100 translate-y-0' : ''}
-          `}>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <input 
-                  type="text" 
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your Name" 
-                  required
-                  className="
-                    w-full p-3 bg-gray-800 border border-gray-700 rounded-lg 
-                    text-white placeholder-gray-400 focus:outline-none 
-                    focus:ring-2 focus:ring-gray-600 transition-all duration-300
-                  "
-                />
-                <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Your Email" 
-                  required
-                  className="
-                    w-full p-3 bg-gray-800 border border-gray-700 rounded-lg 
-                    text-white placeholder-gray-400 focus:outline-none 
-                    focus:ring-2 focus:ring-gray-600 transition-all duration-300
-                  "
-                />
-              </div>
-              <textarea 
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Your Message" 
-                required
-                className="
-                  w-full p-3 bg-gray-800 border border-gray-700 rounded-lg 
-                  text-white placeholder-gray-400 focus:outline-none 
-                  focus:ring-2 focus:ring-gray-600 h-40 transition-all duration-300
-                "
-              />
-              {submitStatus.success && (
-                <div className="text-green-500 text-center">
-                  Message sent successfully! I'll get back to you soon.
-                </div>
-              )}
-              {submitStatus.error && (
-                <div className="text-red-500 text-center">
-                  Oops! There was an error sending your message. Please try again.
-                </div>
-              )}
-              <button 
-                type="submit"
-                disabled={submitStatus.isSubmitting}
-                className={`
-                  w-full text-white py-4 rounded-lg transition-all duration-300 
-                  flex items-center justify-center gap-2
-                  ${submitStatus.isSubmitting 
-                    ? 'bg-gray-600 cursor-not-allowed' 
-                    : 'bg-gray-700 hover:bg-gray-600'}
-                `}
-              >
-                {submitStatus.isSubmitting ? 'Sending...' : 'Send Message'}
-              </button>
-            </form>
-          </div>
-        </>
-      );
-    }
+    renderFunction: (isLoaded) => (
+      <>
+        <SocialMediaNav />
+        <ContactForm isLoaded={isLoaded} />
+      </>
+    )
   }
 };
