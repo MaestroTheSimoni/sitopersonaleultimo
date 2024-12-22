@@ -48,15 +48,20 @@ const ProfessionalSpaceBackground = () => {
       }
     ];
 
-    // Fixed positions for the atoms
-    const newAtomPositionsX = [30, 40, 65, 20]; // Spread across width
-    const newAtomPositionsY = [40, 40, 30, -5]; // Spread across height a b 60 10
+    // Desktop and mobile positions
+    const positions = isMobile ? {
+      x: [10, 10, 60, 60],     // Mobile X positions
+      y: [20, 60, 20, 60]      // Mobile Y positions
+    } : {
+      x: [30, 40, 65, 20],     // Desktop X positions
+      y: [40, 40, 30, -5]      // Desktop Y positions
+    };
 
     // Generate atom-like stars with responsive sizing
     const newAtomStars = atomData.map((atom, index) => ({
       id: `atom-${index}`,
-      x: newAtomPositionsX[index], // Removed the -1
-      y: newAtomPositionsY[index], // Removed the +100
+      x: positions.x[index],
+      y: positions.y[index],
       size: isMobile ? 400 : 700,
       orbits: atom.skills.map((skill, orbitIndex) => ({
         radius: (50 + orbitIndex * 30) * (isMobile ? 0.6 : 1),
@@ -72,7 +77,7 @@ const ProfessionalSpaceBackground = () => {
 
   return (
     <div className="absolute inset-0 overflow-hidden z-0">
-      {/* Starry background */}
+      {/* Rest of the component remains the same */}
       <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a1a] to-black opacity-90">
         {stars.map(star => (
           <div
