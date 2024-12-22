@@ -50,8 +50,8 @@ const ProfessionalSpaceBackground = () => {
 
     // Desktop and mobile positions
     const positions = isMobile ? {
-      x: [10, 10, 60, 60],     // Mobile X positions
-      y: [20, 60, 20, 60]      // Mobile Y positions
+      x: [1, -20, 10, 20],     // Mobile X positions
+      y: [20, 30, 60, 5]      // Mobile Y positions
     } : {
       x: [30, 40, 65, 20],     // Desktop X positions
       y: [40, 40, 30, -5]      // Desktop Y positions
